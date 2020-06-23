@@ -92,9 +92,11 @@ def train(**kwargs):
             G = Variable(G_buffer)
 
             theta_x = 1.0 / 2 * torch.matmul(cur_f, G.t())
-            logloss_x = -torch.sum(S * theta_x - torch.log(1.0 + torch.exp(theta_x)))
+            logloss_x = -torch.sum(S * theta_x -
+                                   torch.log(1.0 + torch.exp(theta_x)))
             quantization_x = torch.sum(torch.pow(B[ind, :] - cur_f, 2))
-            balance_x = torch.sum(torch.pow(cur_f.t().mm(ones) + F[unupdated_ind].t().mm(ones_), 2))
+            balance_x = torch.sum(torch.pow(cur_f.t().mm(
+                ones) + F[unupdated_ind].t().mm(ones_), 2))
             loss_x = logloss_x + opt.gamma * quantization_x + opt.eta * balance_x
             loss_x /= (batch_size * num_train)
 
@@ -125,9 +127,11 @@ def train(**kwargs):
             # calculate loss
             # theta_y: (batch_size, num_train)
             theta_y = 1.0 / 2 * torch.matmul(cur_g, F.t())
-            logloss_y = -torch.sum(S * theta_y - torch.log(1.0 + torch.exp(theta_y)))
+            logloss_y = -torch.sum(S * theta_y -
+                                   torch.log(1.0 + torch.exp(theta_y)))
             quantization_y = torch.sum(torch.pow(B[ind, :] - cur_g, 2))
-            balance_y = torch.sum(torch.pow(cur_g.t().mm(ones) + G[unupdated_ind].t().mm(ones_), 2))
+            balance_y = torch.sum(torch.pow(cur_g.t().mm(
+                ones) + G[unupdated_ind].t().mm(ones_), 2))
             loss_y = logloss_y + opt.gamma * quantization_y + opt.eta * balance_y
             loss_y /= (num_train * batch_size)
 
@@ -141,13 +145,15 @@ def train(**kwargs):
         # calculate total loss
         loss = calc_loss(B, F, G, Variable(Sim), opt.gamma, opt.eta)
 
-        print('...epoch: %3d, loss: %3.3f, lr: %f' % (epoch + 1, loss.data, lr))
+        print('...epoch: %3d, loss: %3.3f, lr: %f' %
+              (epoch + 1, loss.data, lr))
         result['loss'].append(float(loss.data))
 
         if opt.valid:
             mapi2t, mapt2i = valid(img_model, txt_model, query_x, retrieval_x, query_y, retrieval_y,
                                    query_L, retrieval_L)
-            print('...epoch: %3d, valid MAP: MAP(i->t): %3.4f, MAP(t->i): %3.4f' % (epoch + 1, mapi2t, mapt2i))
+            print('...epoch: %3d, valid MAP: MAP(i->t): %3.4f, MAP(t->i): %3.4f' %
+                  (epoch + 1, mapi2t, mapt2i))
             if mapt2i >= max_mapt2i and mapi2t >= max_mapi2t:
                 max_mapi2t = mapi2t
                 max_mapt2i = mapt2i
@@ -164,13 +170,15 @@ def train(**kwargs):
 
     print('...training procedure finish')
     if opt.valid:
-        print('   max MAP: MAP(i->t): %3.4f, MAP(t->i): %3.4f' % (max_mapi2t, max_mapt2i))
+        print('   max MAP: MAP(i->t): %3.4f, MAP(t->i): %3.4f' %
+              (max_mapi2t, max_mapt2i))
         result['mapi2t'] = max_mapi2t
         result['mapt2i'] = max_mapt2i
     else:
         mapi2t, mapt2i = valid(img_model, txt_model, query_x, retrieval_x, query_y, retrieval_y,
                                query_L, retrieval_L)
-        print('   max MAP: MAP(i->t): %3.4f, MAP(t->i): %3.4f' % (mapi2t, mapt2i))
+        print('   max MAP: MAP(i->t): %3.4f, MAP(t->i): %3.4f' %
+              (mapi2t, mapt2i))
         result['mapi2t'] = mapi2t
         result['mapt2i'] = mapt2i
 
@@ -258,9 +266,11 @@ def split_data(images, tags, labels):
 def calc_neighbor(label1, label2):
     # calculate the similar matrix
     if opt.use_gpu:
-        Sim = (label1.matmul(label2.transpose(0, 1)) > 0).type(torch.cuda.FloatTensor)
+        Sim = (label1.matmul(label2.transpose(0, 1))
+               > 0).type(torch.cuda.FloatTensor)
     else:
-        Sim = (label1.matmul(label2.transpose(0, 1)) > 0).type(torch.FloatTensor)
+        Sim = (label1.matmul(label2.transpose(0, 1))
+               > 0).type(torch.FloatTensor)
     return Sim
 
 
