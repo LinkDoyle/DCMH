@@ -248,6 +248,10 @@ def split_data(images, tags, labels):
     L['train'] = labels[opt.query_size: opt.training_size + opt.query_size]
     L['retrieval'] = labels[opt.query_size: opt.query_size + opt.database_size]
 
+    print('labels', labels.shape)
+    print('query', L['query'].shape)
+    print('train', L['train'].shape)
+    print('retrieval', L['retrieval'].shape)
     return X, Y, L
 
 
