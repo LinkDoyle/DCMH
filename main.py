@@ -8,17 +8,24 @@ from torch.optim import SGD
 from tqdm import tqdm
 from models import ImgModule, TxtModule
 from utils import calc_map_k
+import time
 
 
 def train(**kwargs):
     opt.parse(kwargs)
+    print('device_count:', torch.cuda.device_count())
 
+    start_time = time.time()
     images, tags, labels = load_data(opt.data_path)
     pretrain_model = load_pretrain_model(opt.pretrain_model_path)
     y_dim = tags.shape[1]
 
     X, Y, L = split_data(images, tags, labels)
-    print('...loading and splitting data finish')
+    del images
+    del tags
+    del labels
+    print(
+        f'...loading and splitting data finish {time.time() - start_time:.2f} s')
 
     img_model = ImgModule(opt.bit, pretrain_model)
     txt_model = TxtModule(y_dim, opt.bit)
