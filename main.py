@@ -10,6 +10,13 @@ from models import ImgModule, TxtModule
 from utils import calc_map_k
 import time
 
+class MyDataParallel(nn.DataParallel):
+    def __getattr__(self, name):
+        try:
+            return super().__getattr__(name)
+        except AttributeError:
+            return getattr(self.module, name)
+
 
 def train(**kwargs):
     opt.parse(kwargs)
@@ -33,6 +40,10 @@ def train(**kwargs):
     if opt.use_gpu:
         img_model = img_model.cuda()
         txt_model = txt_model.cuda()
+
+    if opt.multi_gpu:
+        img_model = MyDataParallel(img_model, device_ids=[0, 1])
+        txt_model = MyDataParallel(txt_model, device_ids=[0, 1])
 
     train_L = torch.from_numpy(L['train'])
     train_x = torch.from_numpy(X['train'])

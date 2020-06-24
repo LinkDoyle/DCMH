@@ -12,6 +12,7 @@ class DefaultConfig(object):
     query_size = 2000
     database_size = 18015
     batch_size = 128
+    multi_gpu = True
 
     # hyper-parameters
     max_epoch = 500
