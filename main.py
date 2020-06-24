@@ -87,6 +87,7 @@ def train(**kwargs):
 
     max_mapi2t = max_mapt2i = 0.
 
+    epoch_start_time = time.time()
     for epoch in range(opt.max_epoch):
         # train image net
         for i in tqdm(range(num_train // batch_size)):
@@ -185,6 +186,9 @@ def train(**kwargs):
             param['lr'] = lr
         for param in optimizer_txt.param_groups:
             param['lr'] = lr
+
+        print('epoch_start_time: %.4f' % epoch_start_time)
+        print('spent time: %.4fs' % (time.time() - epoch_start_time))
 
     print('...training procedure finish')
     if opt.valid:
